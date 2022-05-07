@@ -8,8 +8,6 @@ server:
   port: 8080
 
 spring:
-  main:
-    web-application-type: reactive
   cloud:
     gateway:
       globalcors:
@@ -20,23 +18,30 @@ spring:
             allowedHeaders: "*"
             exposedHeaders: "*"
       routes:
-        - id: user-service
-          uri: http://localhost:8075
+        - id: userservice
+          uri: lb://userservice
           predicates:
-            - Path=/api/v1/***
+            - Path=/userservice/**
           filters:
             - RewritePath=/userservice(?<segment>/?.*), $\{segment}
 
         - id: authentication
-          uri: http://localhost:8095
+          uri: lb://authentication
           predicates:
-            - Path=/api/v1/user/**
+            - Path=/authentication/**
           filters:
             - RewritePath=/authentication(?<segment>/?.*), $\{segment}
 
-        - id: appointment-service
-          uri: http://localhost:8060
+        - id: appointment
+          uri: lb://appointment
           predicates:
-            - Path=/api/v1/**
+            - Path=/appointment/**
           filters:
-            - RewritePath=/appointment-service(?<segment>/?.*), $\{segment}
+            - RewritePath=/appointment(?<segment>/?.*), $\{segment}
+
+        - id: emailservice
+          uri: lb://emailservice
+          predicates:
+            - Path=/emailservice/**
+          filters:
+            - RewritePath=/emailservice(?<segment>/?.*), $\{segment}
